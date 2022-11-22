@@ -1,58 +1,71 @@
 async function scrapeSeoData(page) {
-  const page_title = await page.evaluate(() => document.title);
-  const page_decrpotion = await page.evaluate(
-    () => document.querySelector('meta[name="description"]')?.content
-  );
-  const h1_count = await page.evaluate(
-    () => document.querySelectorAll("h1").length
-  );
-  const word_count = await page.evaluate(() => {
-    let sum = 0;
-    document.querySelectorAll("p").forEach((p) => {
-      sum += p.innerText.split(" ").length;
-    });
-    return sum;
-  });
-  const links = await page.evaluate(() => {
-    const internal_links = [];
-    const external_links = [];
-    document.querySelectorAll("p a").forEach((link) => {
-      const href = link.getAttribute("href");
-      const origin = document.location.origin;
+  const page_title = await PageData.getPageTitle(page);
+  const page_decrpotion = await PageData.getPageDecrpotion(page);
+  const h1_count = await PageData.getPageHeading(page);
+  const word_count = await PageData.getPageWordCount(page);
+  const links = await PageData.getPageLinks(page);
+  const ssl = await PageData.getPageSSL(page);
 
-      if (href === origin) return;
-
-      if (href.indexOf(origin) >= 0 || href.startsWith("/")) {
-        // those are intenral links
-
-        if (internal_links.length === 0) {
-          internal_links.push(href);
-        } else {
-          if (internal_links[internal_links.length - 1]?.href !== href) {
-            internal_links.push(href);
-          }
-        }
-      } else {
-        // those are extenral links
-        if (href.startsWith("#") === false) {
-          external_links.push(href);
-        }
-      }
-    });
-    return { internal_links, external_links };
-  });
-
-  const ssl = await page.evaluate(() =>
-    document.location.origin.toString().startsWith("https") ? true : false
-  );
   return {
-    title: page_title,
-    description: page_decrpotion,
+    title_count: page_title.length,
+    description_count: page_decrpotion.length,
     h1_count,
     word_count,
-    links,
-    ssl,
+    internal_links_count: links.internal_links.length,
+    external_links_count: links.external_links.length,
+    isSSL: ssl,
   };
 }
+
+const PageData = {
+  getPageTitle: async (page) => await page.evaluate(() => document.title),
+  getPageDecrpotion: async (page) =>
+    await page.evaluate(
+      () => document.querySelector('meta[name="description"]')?.content
+    ),
+  getPageHeading: async (page) =>
+    await page.evaluate(() => document.querySelectorAll("h1").length),
+  getPageWordCount: async (page) =>
+    await page.evaluate(() => {
+      let sum = 0;
+      document.querySelectorAll("p").forEach((p) => {
+        sum += p.innerText.split(" ").length;
+      });
+      return sum;
+    }),
+  getPageLinks: async (page) =>
+    await page.evaluate(() => {
+      const internal_links = [];
+      const external_links = [];
+      document.querySelectorAll("p a").forEach((link) => {
+        const href = link.getAttribute("href");
+        const origin = document.location.origin;
+
+        if (href === origin) return;
+
+        if (href.indexOf(origin) >= 0 || href.startsWith("/")) {
+          // those are intenral links
+
+          if (internal_links.length === 0) {
+            internal_links.push(href);
+          } else {
+            if (internal_links[internal_links.length - 1]?.href !== href) {
+              internal_links.push(href);
+            }
+          }
+        } else {
+          // those are extenral links
+          if (href.startsWith("#") === false) {
+            external_links.push(href);
+          }
+        }
+      });
+      return { internal_links, external_links };
+    }),
+  getPageSSL: async (page) =>
+    await page.evaluate(() =>
+      document.location.origin.toString().startsWith("https") ? true : false
+    ),
+};
 
 module.exports = scrapeSeoData;

@@ -1,10 +1,11 @@
 async function validatePageSeoData({
-  title,
-  description,
+  title_count,
+  description_count,
   h1_count,
   word_count,
-  ssl,
-  links,
+  isSSL,
+  internal_links_count,
+  external_links_count,
 }) {
   const validateResults = {};
 
@@ -12,35 +13,38 @@ async function validatePageSeoData({
     50,
     60,
     "title",
-    title,
+    title_count,
     "characters"
   );
+
   validateResults.pageDescriptionVaildateResults = validateItemLength(
     156,
     160,
     "description",
-    description,
-    "characters"
+    description_count
   );
+
   validateResults.pageContentVaildateResults = validateContentLength(
-    2100,
+    500,
     2400,
-    "blog post content",
-    word_count,
-    "word"
+    word_count
   );
 
   validateResults.pageMainHeaderVaildateResults =
     validateMainPageHeader(h1_count);
 
-  validateResults.websiteSSLVaildateResults = validateSSL(ssl);
+  validateResults.websiteSSLVaildateResults = validateSSL(isSSL);
 
-  validateResults.pagelinksVaildateResults = validateLinks(links);
+  validateResults.pagelinksVaildateResults = validateLinks({
+    internal_links_count,
+    external_links_count,
+  });
 
   console.log(validateResults);
 }
 
 function validateContentLength(min, max, item) {
+  console.log(item);
   // no item
   if (item === 0)
     return {
@@ -71,35 +75,36 @@ function validateContentLength(min, max, item) {
     };
 }
 
-function validateItemLength(min, max, item_name, item, unit) {
-  console.log(item);
+function validateItemLength(min, max, item_name, item) {
   // no item
-  if (item === "" || item === null || item === undefined)
+  if (item === 0 || item === null || item === undefined)
     return {
       rating: "bad",
       header: `No ${item_name}!`,
       description: `the page must have a ${item_name}.`,
     };
   // very short item
-  if (item.length < min)
+  if (item < min)
     return {
       rating: "bad",
       header: `Page ${item_name} is short!`,
-      description: `The recommended length of the page ${item_name} should between ${min}-${max} ${unit}, try to increase the length of the page's ${item_name}.`,
+      description: `The recommended length of the page ${item_name} should between ${min}-${max} characters, try to increase the length of the page's ${item_name}. the cerrent lengh is ${item} characters (${
+        min - item
+      } characters to go!)`,
     };
   // perfect item length
-  if (item.length >= min && item.length <= max)
+  if (item >= min && item <= max)
     return {
       rating: "excellent",
       header: `Page ${item_name} length is perfect!`,
-      description: `excellent job the page ${item_name} be is between ${min}–${max} ${unit}, keep up the good work.`,
+      description: `excellent job the page ${item_name} be is between ${min}–${max} characters, keep up the good work.`,
     };
   // very long item length
-  if (item.length > max)
+  if (item > max)
     return {
       rating: "good",
       header: `Page ${item_name} length is long!`,
-      description: `the page ${item_name} should be between ${min}–${max} ${unit}, your current page ${item_name} is ${item.length},${unit}.`,
+      description: `the page ${item_name} should be between ${min}–${max} characters, your current page ${item_name} is ${item} characters.`,
     };
 }
 
@@ -149,32 +154,32 @@ function validateSSL(ssl) {
 }
 
 function validateLinks(links) {
-  const { internal_links, external_links } = links;
+  const { internal_links_count, external_links_count } = links;
   const result = {};
-  if (internal_links.length === 0)
-    result.internal_links = {
+  if (internal_links_count === 0)
+    result.internal_links_count = {
       rating: "bad",
       header: `No internal links was found!`,
-      description: `Internal links are important because they can help Google understand and rank your website better. By giving Google links to follow along with descriptive anchor text, you can indicate to Google which pages of your site are important, as well as what they are about, you crrently have ${internal_links.length} links on this page! keep up with the good work!`,
+      description: `Internal links are important because they can help Google understand and rank your website better. By giving Google links to follow along with descriptive anchor text, you can indicate to Google which pages of your site are important, as well as what they are about, try to add some`,
     };
   else
-    result.internal_links = {
+    result.internal_links_count = {
       rating: "excellent",
-      header: `${internal_links.length} internal links was found!`,
-      description: `Internal links are important because they can help Google understand and rank your website better. By giving Google links to follow along with descriptive anchor text, you can indicate to Google which pages of your site are important, as well as what they are about, you crrently have ${internal_links.length} links on this page! try to add some!`,
+      header: `${internal_links_count} internal links was found!`,
+      description: `Internal links are important because they can help Google understand and rank your website better. By giving Google links to follow along with descriptive anchor text, you can indicate to Google which pages of your site are important, as well as what they are about, you crrently have ${internal_links_count} links on this page! try to add more, the more the better!`,
     };
 
-  if (external_links.length === 0)
-    result.external_links = {
+  if (external_links_count === 0)
+    result.external_links_count = {
       rating: "bad",
       header: `No external links was found!`,
-      description: `external links are important because they can help Google understand and rank your website better. By giving Google links to follow along with descriptive anchor text, you can indicate to Google which pages of your site are important, as well as what they are about, you crrently have ${external_links.length} links on this page! keep up with the good work!`,
+      description: `If the content of a page makes someone talk, it indicates authority, credibility, and/or trustworthiness. Thus, links on pages are like votes of trust, credibility, and authority. The more links a page gets, the more votes they are getting, which can improve their ranking, you crrently have eno extenral links on this page! try to add some!`,
     };
   else
-    result.external_links = {
+    result.external_links_count = {
       rating: "excellent",
-      header: `${external_links.length} external links was found!`,
-      description: `external links are important because they can help Google understand and rank your website better. By giving Google links to follow along with descriptive anchor text, you can indicate to Google which pages of your site are important, as well as what they are about, you crrently have ${external_links.length} links on this page! try to add some!`,
+      header: `${external_links_count} external links was found!`,
+      description: `If the content of a page makes someone talk, it indicates authority, credibility, and/or trustworthiness. Thus, links on pages are like votes of trust, credibility, and authority. The more links a page gets, the more votes they are getting, which can improve their ranking, you crrently have ${external_links_count} links on this page! try to add more, the more the better!`,
     };
   return result;
 }
