@@ -7,8 +7,8 @@ async function scrapeSeoData(page) {
   const ssl = await PageData.getPageSSL(page);
 
   return {
-    title_count: page_title.length,
-    description_count: page_decrpotion.length,
+    title_count: page_title,
+    description_count: page_decrpotion,
     h1_count,
     word_count,
     internal_links_count: links.internal_links.length,
@@ -18,11 +18,13 @@ async function scrapeSeoData(page) {
 }
 
 const PageData = {
-  getPageTitle: async (page) => await page.evaluate(() => document.title),
+  getPageTitle: async (page) =>
+    await page.evaluate(() => document.title.length),
   getPageDecrpotion: async (page) =>
-    await page.evaluate(
-      () => document.querySelector('meta[name="description"]')?.content
-    ),
+    await page.evaluate(() => {
+      const des = document.querySelector('meta[name="description"]')?.content;
+      return des ? des.length : 0;
+    }),
   getPageHeading: async (page) =>
     await page.evaluate(() => document.querySelectorAll("h1").length),
   getPageWordCount: async (page) =>

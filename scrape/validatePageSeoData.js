@@ -1,4 +1,4 @@
-async function validatePageSeoData({
+function validatePageSeoData({
   title_count,
   description_count,
   h1_count,
@@ -7,9 +7,9 @@ async function validatePageSeoData({
   internal_links_count,
   external_links_count,
 }) {
-  const validateResults = {};
+  const validationResults = {};
 
-  validateResults.pageTitleVaildateResults = validateItemLength(
+  validationResults.pageTitleVaildateResults = validateItemLength(
     50,
     60,
     "title",
@@ -17,30 +17,30 @@ async function validatePageSeoData({
     "characters"
   );
 
-  validateResults.pageDescriptionVaildateResults = validateItemLength(
+  validationResults.pageDescriptionVaildateResults = validateItemLength(
     156,
     160,
     "description",
     description_count
   );
 
-  validateResults.pageContentVaildateResults = validateContentLength(
+  validationResults.pageContentVaildateResults = validateContentLength(
     500,
     2400,
     word_count
   );
 
-  validateResults.pageMainHeaderVaildateResults =
+  validationResults.pageMainHeaderVaildateResults =
     validateMainPageHeader(h1_count);
 
-  validateResults.websiteSSLVaildateResults = validateSSL(isSSL);
+  validationResults.websiteSSLVaildateResults = validateSSL(isSSL);
 
-  validateResults.pagelinksVaildateResults = validateLinks({
+  validationResults.pagelinksVaildateResults = validateLinks({
     internal_links_count,
     external_links_count,
   });
 
-  console.log(validateResults);
+  return validationResults;
 }
 
 function validateContentLength(min, max, item) {
@@ -49,29 +49,22 @@ function validateContentLength(min, max, item) {
   if (item === 0)
     return {
       rating: "bad",
-      header: `No ${item_name}!`,
-      description: `the page must have a ${item_name}.`,
+      header: `No page content!`,
+      description: `the page must have some content on your page.`,
     };
   // very short item
   if (item < min)
     return {
       rating: "bad",
-      header: `Page blog content is short!`,
+      header: `Page content is short!`,
       description: `The recommended length of the page blog content should between ${min}-${max} words, try to increase the length of the page's blog content.`,
     };
   // perfect item length
-  if (item >= min && item <= max)
+  if (item >= min)
     return {
       rating: "excellent",
-      header: `Page blog content length is perfect!`,
-      description: `excellent job the page blog content be is between ${min}–${max} words, keep up the good work.`,
-    };
-  // very long item length
-  if (item > max)
-    return {
-      rating: "good",
-      header: `Page ${item_name} length is long!`,
-      description: `the page ${item_name} should be between ${min}–${max} words, your current page content is ${item} words}.`,
+      header: `Page blog content length is long!`,
+      description: `excellent job the page content is more the ${min}, try to add more, the more the better, keep up the good work.`,
     };
 }
 
