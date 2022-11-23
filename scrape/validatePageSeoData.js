@@ -7,40 +7,32 @@ function validatePageSeoData({
   internal_links_count,
   external_links_count,
 }) {
-  const validationResults = {};
+  const validationResults = [];
 
-  validationResults.pageTitleVaildateResults = validateItemLength(
-    50,
-    60,
-    "title",
-    title_count,
-    "characters"
+  validationResults.push(
+    validateItemLength(50, 60, "title", title_count, "characters")
   );
 
-  validationResults.pageDescriptionVaildateResults = validateItemLength(
-    156,
-    160,
-    "description",
-    description_count
+  validationResults.push(
+    validateItemLength(156, 160, "description", description_count)
   );
 
-  validationResults.pageContentVaildateResults = validateContentLength(
-    500,
-    2400,
-    word_count
-  );
+  validationResults.push(validateContentLength(500, 2400, word_count));
 
-  validationResults.pageMainHeaderVaildateResults =
-    validateMainPageHeader(h1_count);
+  validationResults.push(validateMainPageHeader(h1_count));
 
-  validationResults.websiteSSLVaildateResults = validateSSL(isSSL);
+  validationResults.push(validateSSL(isSSL));
 
-  validationResults.pagelinksVaildateResults = validateLinks({
+  const linksValidationResults = validateLinks({
     internal_links_count,
     external_links_count,
   });
 
-  return validationResults;
+  return [
+    ...validationResults,
+    linksValidationResults[0],
+    linksValidationResults[1],
+  ];
 }
 
 function validateContentLength(min, max, item) {
@@ -64,7 +56,7 @@ function validateContentLength(min, max, item) {
     return {
       rating: "excellent",
       header: `Page blog content length is long!`,
-      description: `excellent job the page content is more the ${min}, try to add more, the more the better, keep up the good work.`,
+      description: `excellent job the page content is more than ${min} words, try to add more, the more the better, keep up the good work.`,
     };
 }
 
@@ -148,32 +140,32 @@ function validateSSL(ssl) {
 
 function validateLinks(links) {
   const { internal_links_count, external_links_count } = links;
-  const result = {};
+  const result = [];
   if (internal_links_count === 0)
-    result.internal_links_count = {
+    result.push({
       rating: "bad",
       header: `No internal links was found!`,
       description: `Internal links are important because they can help Google understand and rank your website better. By giving Google links to follow along with descriptive anchor text, you can indicate to Google which pages of your site are important, as well as what they are about, try to add some`,
-    };
+    });
   else
-    result.internal_links_count = {
+    result.push({
       rating: "excellent",
       header: `${internal_links_count} internal links was found!`,
       description: `Internal links are important because they can help Google understand and rank your website better. By giving Google links to follow along with descriptive anchor text, you can indicate to Google which pages of your site are important, as well as what they are about, you crrently have ${internal_links_count} links on this page! try to add more, the more the better!`,
-    };
+    });
 
   if (external_links_count === 0)
-    result.external_links_count = {
+    result.push({
       rating: "bad",
       header: `No external links was found!`,
       description: `If the content of a page makes someone talk, it indicates authority, credibility, and/or trustworthiness. Thus, links on pages are like votes of trust, credibility, and authority. The more links a page gets, the more votes they are getting, which can improve their ranking, you crrently have eno extenral links on this page! try to add some!`,
-    };
+    });
   else
-    result.external_links_count = {
+    result.push({
       rating: "excellent",
       header: `${external_links_count} external links was found!`,
       description: `If the content of a page makes someone talk, it indicates authority, credibility, and/or trustworthiness. Thus, links on pages are like votes of trust, credibility, and authority. The more links a page gets, the more votes they are getting, which can improve their ranking, you crrently have ${external_links_count} links on this page! try to add more, the more the better!`,
-    };
+    });
   return result;
 }
 
