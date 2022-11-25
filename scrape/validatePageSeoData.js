@@ -36,7 +36,6 @@ function validatePageSeoData({
 }
 
 function validateContentLength(min, max, item) {
-  console.log(item);
   // no item
   if (item === 0)
     return {
