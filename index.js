@@ -1,7 +1,7 @@
 const scrapeController = require("./scrape/scrapeController");
 const express = require("express");
 const app = express();
-const PORT = 8080;
+const PORT = process.env.PORT | 8080;
 const cors = require("cors");
 
 app.use(express());
@@ -18,6 +18,10 @@ app.post("/", async (req, res) => {
     console.log(error);
     return res.status(500).send(error);
   }
+});
+
+app.get("/", async (_req, res) => {
+  res.send("the server is runing.");
 });
 
 app.listen(PORT, () => console.log(`server is listening on port ${PORT}`));
