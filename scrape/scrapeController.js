@@ -3,7 +3,9 @@ const scrapeSeoData = require("./scrapeSeoData");
 const validatePageSeoData = require("./validatePageSeoData");
 
 async function scrapeController(url) {
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
   try {
     const page = await browser.newPage();
     await page.goto(url);
