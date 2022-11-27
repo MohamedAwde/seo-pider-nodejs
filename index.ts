@@ -1,15 +1,18 @@
-const scrapeController = require("./scrape/scrapeController");
-const express = require("express");
+import scrapeController from "./scrape/scrapeController";
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
 const app = express();
-const PORT = process.env.PORT | 8080;
-const cors = require("cors");
+
+dotenv.config();
+const PORT = 8080;
 
 app.use(express());
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.post("/", async (req, res) => {
+app.post("/", async (req: any, res: any) => {
   const { url } = req.body;
   try {
     const result = await scrapeController(url);
@@ -20,7 +23,7 @@ app.post("/", async (req, res) => {
   }
 });
 
-app.get("/", async (_req, res) => {
+app.get("/", async (_req: any, res: any) => {
   res.send("the server is runing.");
 });
 

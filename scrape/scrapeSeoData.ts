@@ -1,4 +1,4 @@
-async function scrapeSeoData(page) {
+export default async function scrapeSeoData(page: any) {
   const page_title = await PageData.getPageTitle(page);
   const page_decrpotion = await PageData.getPageDecrpotion(page);
   const h1_count = await PageData.getPageHeading(page);
@@ -18,16 +18,18 @@ async function scrapeSeoData(page) {
 }
 
 const PageData = {
-  getPageTitle: async (page) =>
+  getPageTitle: async (page: any) =>
     await page.evaluate(() => document.title.length),
-  getPageDecrpotion: async (page) =>
+  getPageDecrpotion: async (page: any) =>
     await page.evaluate(() => {
-      const des = document.querySelector('meta[name="description"]')?.content;
+      const des = document
+        .querySelector('meta[name="description"]')
+        ?.getAttribute("content");
       return des ? des.length : 0;
     }),
-  getPageHeading: async (page) =>
+  getPageHeading: async (page: any) =>
     await page.evaluate(() => document.querySelectorAll("h1").length),
-  getPageWordCount: async (page) =>
+  getPageWordCount: async (page: any) =>
     await page.evaluate(() => {
       let sum = 0;
       document.querySelectorAll("p").forEach((p) => {
@@ -35,12 +37,12 @@ const PageData = {
       });
       return sum;
     }),
-  getPageLinks: async (page) =>
+  getPageLinks: async (page: any) =>
     await page.evaluate(() => {
-      const internal_links = [];
-      const external_links = [];
+      const internal_links: string[] = [];
+      const external_links: string[] = [];
       document.querySelectorAll("p a").forEach((link) => {
-        const href = link.getAttribute("href");
+        const href = link?.getAttribute("href")?.toString() || "";
         const origin = document.location.origin;
 
         if (href === origin) return;
@@ -51,7 +53,7 @@ const PageData = {
           if (internal_links.length === 0) {
             internal_links.push(href);
           } else {
-            if (internal_links[internal_links.length - 1]?.href !== href) {
+            if (internal_links[internal_links.length - 1] !== href) {
               internal_links.push(href);
             }
           }
@@ -64,10 +66,8 @@ const PageData = {
       });
       return { internal_links, external_links };
     }),
-  getPageSSL: async (page) =>
+  getPageSSL: async (page: any) =>
     await page.evaluate(() =>
       document.location.origin.toString().startsWith("https") ? true : false
     ),
 };
-
-module.exports = scrapeSeoData;

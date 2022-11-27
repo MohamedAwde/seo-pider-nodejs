@@ -1,4 +1,4 @@
-function validatePageSeoData({
+export default function validatePageSeoData({
   title_count,
   description_count,
   h1_count,
@@ -6,27 +6,34 @@ function validatePageSeoData({
   isSSL,
   internal_links_count,
   external_links_count,
+}: {
+  title_count: number;
+  description_count: number;
+  h1_count: number;
+  word_count: number;
+  isSSL: boolean;
+  internal_links_count: number;
+  external_links_count: number;
 }) {
-  const validationResults = [];
+  const validationResults: {
+    rating?: string;
+    header?: string;
+    description?: string;
+  }[] = [];
 
   validationResults.push(
-    validateItemLength(50, 60, "title", title_count, "characters")
+    validateItemLength(156, 160, description_count, "description")
   );
-
-  validationResults.push(
-    validateItemLength(156, 160, "description", description_count)
-  );
-
   validationResults.push(validateContentLength(500, 2400, word_count));
 
   validationResults.push(validateMainPageHeader(h1_count));
-
   validationResults.push(validateSSL(isSSL));
 
   const linksValidationResults = validateLinks({
     internal_links_count,
     external_links_count,
   });
+  validationResults.push(validateItemLength(50, 60, title_count, "title"));
 
   return [
     ...validationResults,
@@ -35,31 +42,12 @@ function validatePageSeoData({
   ];
 }
 
-function validateContentLength(min, max, item) {
-  // no item
-  if (item === 0)
-    return {
-      rating: "bad",
-      header: `No page content!`,
-      description: `the page must have some content on your page.`,
-    };
-  // very short item
-  if (item < min)
-    return {
-      rating: "bad",
-      header: `Page content is short!`,
-      description: `The recommended length of the page blog content should between ${min}-${max} words, try to increase the length of the page's blog content.`,
-    };
-  // perfect item length
-  if (item >= min)
-    return {
-      rating: "excellent",
-      header: `Page blog content length is long!`,
-      description: `excellent job the page content is more than ${min} words, try to add more, the more the better, keep up the good work.`,
-    };
-}
-
-function validateItemLength(min, max, item_name, item) {
+function validateItemLength(
+  min: number,
+  max: number,
+  item: number,
+  item_name: string
+) {
   // no item
   if (item === 0 || item === null || item === undefined)
     return {
@@ -84,7 +72,7 @@ function validateItemLength(min, max, item_name, item) {
       description: `excellent job the page ${item_name} be is between ${min}–${max} characters, keep up the good work.`,
     };
   // very long item length
-  if (item > max)
+  else
     return {
       rating: "good",
       header: `Page ${item_name} length is long!`,
@@ -92,7 +80,31 @@ function validateItemLength(min, max, item_name, item) {
     };
 }
 
-function validateMainPageHeader(h1_count) {
+function validateContentLength(min: number, max: number, item: number) {
+  // no item
+  if (item === 0)
+    return {
+      rating: "bad",
+      header: `No page content!`,
+      description: `the page must have some content on your page.`,
+    };
+  // very short item
+  if (item < min)
+    return {
+      rating: "bad",
+      header: `Page content is short!`,
+      description: `The recommended length of the page blog content should between ${min}-${max} words, try to increase the length of the page's blog content.`,
+    };
+  // perfect item length
+  else
+    return {
+      rating: "excellent",
+      header: `Page blog content length is long!`,
+      description: `excellent job the page content is more than ${min} words, try to add more, the more the better, keep up the good work.`,
+    };
+}
+
+function validateMainPageHeader(h1_count: number) {
   if (h1_count === null || h1_count === undefined)
     return {
       rating: "bad",
@@ -112,7 +124,7 @@ function validateMainPageHeader(h1_count) {
       header: "Main h1 header found!",
       description: `The page contain one h1 element, excellent job!.`,
     };
-  if (h1_count > 1)
+  else
     return {
       rating: "good",
       header: "More than h1 header found!",
@@ -120,7 +132,7 @@ function validateMainPageHeader(h1_count) {
     };
 }
 
-function validateSSL(ssl) {
+function validateSSL(ssl: boolean) {
   if (ssl)
     return {
       rating: "excellent",
@@ -137,9 +149,16 @@ function validateSSL(ssl) {
     };
 }
 
-function validateLinks(links) {
-  const { internal_links_count, external_links_count } = links;
-  const result = [];
+function validateLinks({
+  internal_links_count,
+  external_links_count,
+}: {
+  internal_links_count: number;
+  external_links_count: number;
+}) {
+  const result: { rating?: string; header?: string; description?: string }[] =
+    [];
+
   if (internal_links_count === 0)
     result.push({
       rating: "bad",
@@ -167,5 +186,3 @@ function validateLinks(links) {
     });
   return result;
 }
-
-module.exports = validatePageSeoData;
