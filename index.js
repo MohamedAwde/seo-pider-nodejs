@@ -7,7 +7,7 @@ const app = express();
 dotenv.config();
 const PORT = process.env.PORT | 8080;
 
-var whitelist = ["https://mohamedawde.github.io/*"];
+var whitelist = ["https://mohamedawde.github.io"];
 var corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
