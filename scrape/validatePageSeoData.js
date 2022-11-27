@@ -1,4 +1,4 @@
-export default function validatePageSeoData({
+function validatePageSeoData({
   title_count,
   description_count,
   h1_count,
@@ -6,20 +6,8 @@ export default function validatePageSeoData({
   isSSL,
   internal_links_count,
   external_links_count,
-}: {
-  title_count: number;
-  description_count: number;
-  h1_count: number;
-  word_count: number;
-  isSSL: boolean;
-  internal_links_count: number;
-  external_links_count: number;
 }) {
-  const validationResults: {
-    rating?: string;
-    header?: string;
-    description?: string;
-  }[] = [];
+  const validationResults = [];
 
   validationResults.push(
     validateItemLength(156, 160, description_count, "description")
@@ -42,12 +30,7 @@ export default function validatePageSeoData({
   ];
 }
 
-function validateItemLength(
-  min: number,
-  max: number,
-  item: number,
-  item_name: string
-) {
+function validateItemLength(min, max, item, item_name) {
   // no item
   if (item === 0 || item === null || item === undefined)
     return {
@@ -80,7 +63,7 @@ function validateItemLength(
     };
 }
 
-function validateContentLength(min: number, max: number, item: number) {
+function validateContentLength(min, max, item) {
   // no item
   if (item === 0)
     return {
@@ -104,7 +87,7 @@ function validateContentLength(min: number, max: number, item: number) {
     };
 }
 
-function validateMainPageHeader(h1_count: number) {
+function validateMainPageHeader(h1_count) {
   if (h1_count === null || h1_count === undefined)
     return {
       rating: "bad",
@@ -132,7 +115,7 @@ function validateMainPageHeader(h1_count: number) {
     };
 }
 
-function validateSSL(ssl: boolean) {
+function validateSSL(ssl) {
   if (ssl)
     return {
       rating: "excellent",
@@ -149,15 +132,8 @@ function validateSSL(ssl: boolean) {
     };
 }
 
-function validateLinks({
-  internal_links_count,
-  external_links_count,
-}: {
-  internal_links_count: number;
-  external_links_count: number;
-}) {
-  const result: { rating?: string; header?: string; description?: string }[] =
-    [];
+function validateLinks({ internal_links_count, external_links_count }) {
+  const result = [];
 
   if (internal_links_count === 0)
     result.push({
@@ -186,3 +162,5 @@ function validateLinks({
     });
   return result;
 }
+
+module.exports = validatePageSeoData;

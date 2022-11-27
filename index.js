@@ -1,7 +1,7 @@
-import scrapeController from "./scrape/scrapeController";
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
+const scrapeController = require("./scrape/scrapeController.js");
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
 const app = express();
 
 dotenv.config();
@@ -12,7 +12,7 @@ app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.post("/", async (req: any, res: any) => {
+app.post("/", async (req, res) => {
   const { url } = req.body;
   try {
     const result = await scrapeController(url);
@@ -23,7 +23,7 @@ app.post("/", async (req: any, res: any) => {
   }
 });
 
-app.get("/", async (_req: any, res: any) => {
+app.get("/", async (_req, res) => {
   res.send("the server is runing.");
 });
 

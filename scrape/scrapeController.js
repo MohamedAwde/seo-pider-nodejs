@@ -1,9 +1,9 @@
-import puppeteer from "puppeteer";
-import scrapeSeoData from "./scrapeSeoData";
-import validatePageSeoData from "./validatePageSeoData";
+const puppeteer = require("puppeteer");
+const scrapeSeoData = require("./scrapeSeoData");
+const validatePageSeoData = require("./validatePageSeoData");
 
-export default async function scrapeController(url: string) {
-  const browser = await puppeteer.launch({ headless: false });
+async function scrapeController(url) {
+  const browser = await puppeteer.launch({ headless: true });
   try {
     const page = await browser.newPage();
     await page.goto(url);
@@ -19,3 +19,5 @@ export default async function scrapeController(url: string) {
     throw new Error("server is offline.");
   }
 }
+
+module.exports = scrapeController;

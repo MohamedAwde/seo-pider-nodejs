@@ -1,4 +1,4 @@
-export default async function scrapeSeoData(page: any) {
+async function scrapeSeoData(page) {
   const page_title = await PageData.getPageTitle(page);
   const page_decrpotion = await PageData.getPageDecrpotion(page);
   const h1_count = await PageData.getPageHeading(page);
@@ -18,18 +18,18 @@ export default async function scrapeSeoData(page: any) {
 }
 
 const PageData = {
-  getPageTitle: async (page: any) =>
+  getPageTitle: async (page) =>
     await page.evaluate(() => document.title.length),
-  getPageDecrpotion: async (page: any) =>
+  getPageDecrpotion: async (page) =>
     await page.evaluate(() => {
       const des = document
         .querySelector('meta[name="description"]')
         ?.getAttribute("content");
       return des ? des.length : 0;
     }),
-  getPageHeading: async (page: any) =>
+  getPageHeading: async (page) =>
     await page.evaluate(() => document.querySelectorAll("h1").length),
-  getPageWordCount: async (page: any) =>
+  getPageWordCount: async (page) =>
     await page.evaluate(() => {
       let sum = 0;
       document.querySelectorAll("p").forEach((p) => {
@@ -37,10 +37,10 @@ const PageData = {
       });
       return sum;
     }),
-  getPageLinks: async (page: any) =>
+  getPageLinks: async (page) =>
     await page.evaluate(() => {
-      const internal_links: string[] = [];
-      const external_links: string[] = [];
+      const internal_links = [];
+      const external_links = [];
       document.querySelectorAll("p a").forEach((link) => {
         const href = link?.getAttribute("href")?.toString() || "";
         const origin = document.location.origin;
@@ -66,8 +66,9 @@ const PageData = {
       });
       return { internal_links, external_links };
     }),
-  getPageSSL: async (page: any) =>
+  getPageSSL: async (page) =>
     await page.evaluate(() =>
       document.location.origin.toString().startsWith("https") ? true : false
     ),
 };
+module.exports = scrapeSeoData;
