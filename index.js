@@ -8,9 +8,7 @@ dotenv.config();
 const PORT = process.env.PORT | 8080;
 
 app.use(express());
-app.use(
-  cors({ origin: ["https://mohamedawde.github.io/seo-spider-react-app/"] })
-);
+app.use(cors({ origin: "https://mohamedawde.github.io/" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
